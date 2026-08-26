@@ -1,0 +1,912 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Ferramenta de orçamento para venda e manutenção de extintores (Pó ABC e CO2, 4/6/8/12kg) — Extintores Globo.">
+<title>Orçamento Globo</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c41221' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='2' width='20' height='20' rx='5' fill='white' stroke='none'/%3E%3Cpath d='M12 4v4'/%3E%3Cpath d='M9 5h6'/%3E%3Cpath d='M8 8h8l1 3H7l1-3Z'/%3E%3Cpath d='M9 11v9a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-9'/%3E%3Cpath d='M6 15h3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg: #f5f6f8;
+    --surface: #ffffff;
+    --surface-2: #f2f3f6;
+    --ink: #191b1f;
+    --ink-soft: #585e68;
+    --ink-faint: #9aa0aa;
+    --line: #e9ebef;
+    --line-strong: #d7dbe2;
+    --accent: #c41221;
+    --accent-ink: #ffffff;
+    --accent-soft: #fdecec;
+    --good: #1c9a55;
+    --good-soft: #e5f8ed;
+    --bad: #c0392b;
+    --bad-soft: #fbeae8;
+    --shadow: 0 1px 2px rgba(20,22,26,.04), 0 8px 24px -10px rgba(20,22,26,.12);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Source Sans 3",system-ui,-apple-system,Segoe UI,sans-serif;
+    font-size:15px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:"Barlow Condensed",system-ui,sans-serif;
+    text-transform:uppercase;
+    letter-spacing:.02em;
+    font-weight:700;
+    text-wrap:balance;
+    margin:0;
+  }
+  .mono, input[type=number], .num, td.num, th.num{
+    font-family:"IBM Plex Mono","Source Sans 3",monospace;
+    font-variant-numeric: tabular-nums;
+  }
+  a{color:inherit;}
+  button{font-family:inherit;cursor:pointer;}
+  input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink);}
+
+  /* ---------- layout ---------- */
+  .app{display:flex;min-height:100vh;}
+
+  .sidebar{
+    width:230px;flex:none;
+    background:var(--surface);
+    border-right:1px solid var(--line);
+    display:flex;flex-direction:column;
+    padding:20px 14px;
+    gap:22px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;padding:0 6px;}
+  .brand-mark{
+    width:34px;height:34px;border-radius:8px;
+    background:var(--accent);color:var(--accent-ink);
+    display:flex;align-items:center;justify-content:center;flex:none;
+  }
+  .brand-text .name{font-family:"Barlow Condensed";font-weight:800;font-size:19px;text-transform:uppercase;letter-spacing:.03em;line-height:1;}
+  .brand-text .sub{font-size:11px;color:var(--ink-faint);letter-spacing:.04em;text-transform:uppercase;margin-top:2px;}
+
+  nav.tabs{display:flex;flex-direction:column;gap:2px;}
+  .tab-btn{
+    display:flex;align-items:center;gap:10px;
+    padding:9px 10px;border-radius:8px;border:none;background:none;
+    color:var(--ink-soft);font-size:13.5px;font-weight:600;text-align:left;
+    letter-spacing:.01em;
+  }
+  .tab-btn svg{width:17px;height:17px;flex:none;opacity:.85;}
+  .tab-btn:hover{background:var(--surface-2);color:var(--ink);}
+  .tab-btn.active{background:var(--accent-soft);color:var(--accent);}
+  .tab-btn.active svg{opacity:1;}
+
+  .sidebar-foot{margin-top:auto;padding:10px 6px 0;border-top:1px solid var(--line);}
+  .sidebar-foot .co{font-size:12px;color:var(--ink-faint);line-height:1.4;}
+  .sidebar-foot .co b{color:var(--ink-soft);font-weight:600;}
+
+  main{flex:1;min-width:0;padding:28px 34px 60px;max-width:1180px;}
+  .page-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap;}
+  .page-head h1{font-size:30px;}
+  .page-head .desc{color:var(--ink-faint);font-size:13px;margin-top:4px;}
+  .head-actions{display:flex;gap:8px;flex-wrap:wrap;}
+
+  .grid{display:grid;gap:18px;}
+  .grid-2{grid-template-columns:1fr 1fr;}
+  @media (max-width:640px){.grid-2{grid-template-columns:1fr;}}
+
+  .card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:20px;
+    box-shadow:var(--shadow);
+  }
+  .card h2{font-size:18px;margin-bottom:2px;}
+  .card .card-sub{color:var(--ink-faint);font-size:12px;margin-bottom:14px;}
+  .section-gap{margin-bottom:20px;}
+
+  label{display:block;font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-faint);margin-bottom:5px;}
+  .field{display:flex;flex-direction:column;}
+  input[type=text],input[type=tel],input[type=number],input[type=date],select,textarea{
+    background:var(--surface-2);
+    border:1px solid var(--line-strong);
+    border-radius:8px;
+    padding:9px 10px;
+    color:var(--ink);
+    width:100%;
+  }
+  textarea{resize:vertical;min-height:64px;}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:0;border-color:var(--accent);}
+  input[readonly]{opacity:.75;}
+
+  .btn{
+    display:inline-flex;align-items:center;gap:7px;
+    padding:9px 15px;border-radius:8px;border:1px solid var(--line-strong);
+    background:var(--surface);color:var(--ink);font-weight:600;font-size:13.5px;
+    white-space:nowrap;
+  }
+  .btn:hover{border-color:var(--ink-faint);}
+  .btn svg{width:15px;height:15px;}
+  .btn-accent{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);}
+  .btn-accent:hover{filter:brightness(1.06);}
+  .btn-ghost{background:none;border-color:transparent;color:var(--ink-soft);}
+  .btn-ghost:hover{background:var(--surface-2);border-color:var(--line);}
+  .btn-sm{padding:6px 10px;font-size:12.5px;border-radius:7px;}
+  .btn[disabled]{opacity:.45;pointer-events:none;}
+
+  table{width:100%;border-collapse:collapse;}
+  th{
+    text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;
+    color:var(--ink-faint);font-weight:700;padding:0 10px 8px;border-bottom:1px solid var(--line);
+  }
+  td{padding:9px 10px;border-bottom:1px solid var(--line);font-size:13.5px;vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  .table-wrap{overflow-x:auto;}
+  th.num,td.num{text-align:right;}
+  td input[type=number],td input[type=text],td select{padding:6px 8px;font-size:13px;}
+
+  .totals-box{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:16px;}
+  .totals-row{display:flex;justify-content:space-between;padding:5px 0;font-size:13.5px;color:var(--ink-soft);}
+  .totals-row.grand{border-top:1px dashed var(--line-strong);margin-top:6px;padding-top:12px;font-size:19px;font-weight:700;color:var(--ink);}
+
+  .item-row-grid{display:grid;grid-template-columns:1.6fr .9fr .9fr 1.7fr .8fr .95fr .95fr 30px;gap:8px;align-items:end;}
+  @media (max-width:1080px){.item-row-grid{grid-template-columns:1fr;}}
+  .item-header-row{display:grid;grid-template-columns:1.6fr .9fr .9fr 1.7fr .8fr .95fr .95fr 30px;gap:8px;margin-bottom:6px;}
+  @media (max-width:1080px){.item-header-row{display:none;}}
+
+  .icon-btn{width:30px;height:30px;border-radius:7px;border:1px solid transparent;background:none;color:var(--ink-faint);display:flex;align-items:center;justify-content:center;}
+  .icon-btn:hover{background:var(--bad-soft);color:var(--bad);}
+
+  .empty{color:var(--ink-faint);font-size:13.5px;padding:30px 10px;text-align:center;}
+
+  .toast{
+    position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(8px);
+    background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:9px;
+    font-size:13.5px;font-weight:600;opacity:0;pointer-events:none;transition:.25s;box-shadow:var(--shadow);z-index:50;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  .logo-drop{
+    width:100%;height:88px;border:1.5px dashed var(--line-strong);border-radius:10px;
+    display:flex;align-items:center;justify-content:center;gap:10px;color:var(--ink-faint);font-size:12.5px;
+    background:var(--surface-2);overflow:hidden;position:relative;
+  }
+  .logo-drop img{max-height:100%;max-width:100%;object-fit:contain;}
+  .hidden-file{position:absolute;inset:0;opacity:0;cursor:pointer;}
+
+  ::-webkit-scrollbar{height:9px;width:9px;}
+  ::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:6px;}
+
+  /* ---------- polish ---------- */
+  .card,.btn,.tab-btn,.icon-btn,input,select,textarea{transition:background-color .15s ease,border-color .15s ease,color .15s ease,box-shadow .15s ease,transform .1s ease;}
+  .card:hover{box-shadow:0 1px 2px rgba(20,22,26,.05), 0 10px 28px -10px rgba(20,22,26,.16);}
+  .btn:active{transform:translateY(1px);}
+
+  .mobile-topbar{display:none;}
+  .sidebar-overlay{display:none;}
+  @media (max-width:900px){
+    .app{position:relative;}
+    .mobile-topbar{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      position:sticky;top:0;z-index:30;background:var(--surface);border-bottom:1px solid var(--line);
+      padding:12px 16px;
+    }
+    .mobile-topbar .brand{padding:0;}
+    #btnMenuToggle{
+      width:36px;height:36px;border-radius:8px;border:1px solid var(--line-strong);background:var(--surface);
+      display:flex;align-items:center;justify-content:center;color:var(--ink-soft);flex:none;
+    }
+    #btnMenuToggle svg{width:18px;height:18px;}
+    .sidebar{
+      position:fixed;left:0;top:0;bottom:0;z-index:40;width:250px;
+      transform:translateX(-100%);box-shadow:0 0 0 transparent;
+    }
+    .sidebar.open{transform:translateX(0);box-shadow:12px 0 30px -12px rgba(0,0,0,.25);}
+    .sidebar-overlay{
+      display:block;position:fixed;inset:0;background:rgba(15,15,20,.4);z-index:35;
+      opacity:0;pointer-events:none;transition:opacity .2s ease;
+    }
+    .sidebar-overlay.show{opacity:1;pointer-events:auto;}
+    main{padding:18px 16px 50px;max-width:100%;}
+  }
+
+  /* ---------- print ---------- */
+  #printArea{display:none;}
+  @media print{
+    body *{visibility:hidden;}
+    #printArea,#printArea *{visibility:visible;}
+    #printArea{display:block;position:absolute;top:0;left:0;width:100%;padding:0;}
+    @page{margin:16mm;}
+  }
+  .doc{font-family:"Source Sans 3",sans-serif;color:#221c18;font-size:13px;}
+  .doc-head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #c41221;padding-bottom:14px;margin-bottom:18px;}
+  .doc-head .logo-box img{max-height:56px;max-width:180px;object-fit:contain;}
+  .doc-head .co-name{font-family:"Barlow Condensed";font-size:26px;font-weight:800;text-transform:uppercase;}
+  .doc-head .co-meta{font-size:11.5px;color:#5c534a;line-height:1.5;margin-top:2px;}
+  .doc-head .doc-title{text-align:right;}
+  .doc-head .doc-title .t{font-family:"Barlow Condensed";font-size:20px;font-weight:800;text-transform:uppercase;color:#c41221;}
+  .doc-head .doc-title .n{font-size:11.5px;color:#5c534a;margin-top:2px;}
+  .doc-client{display:flex;gap:40px;margin-bottom:18px;font-size:12.5px;}
+  .doc-client b{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:#948a7d;margin-bottom:3px;}
+  .doc table{width:100%;border-collapse:collapse;margin-bottom:16px;}
+  .doc th{background:#f3efe8;font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;text-align:left;padding:8px 8px;border-bottom:1px solid #cfc4b0;}
+  .doc td{padding:8px;border-bottom:1px solid #e3dbcd;font-size:12.5px;}
+  .doc th.num,.doc td.num{text-align:right;}
+  .doc-totals{margin-left:auto;width:260px;font-size:13px;}
+  .doc-totals .r{display:flex;justify-content:space-between;padding:4px 0;}
+  .doc-totals .grand{border-top:2px solid #221c18;margin-top:4px;padding-top:8px;font-weight:800;font-size:16px;}
+  .doc-foot{margin-top:24px;font-size:11.5px;color:#5c534a;border-top:1px solid #e3dbcd;padding-top:12px;white-space:pre-wrap;line-height:1.6;}
+  .doc-sign{display:flex;gap:60px;margin-top:46px;font-size:12px;}
+  .doc-sign div{flex:1;border-top:1px solid #221c18;padding-top:6px;text-align:center;color:#5c534a;}
+</style>
+</head>
+<body>
+
+
+<div class="mobile-topbar">
+  <div class="brand">
+    <div class="brand-mark">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="M9 3h6"/><path d="M8 6h8l1 3H7l1-3Z"/><path d="M9 9v11a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2V9"/><path d="M6 13h3"/></svg>
+    </div>
+    <div class="brand-text"><div class="name">Globo</div></div>
+  </div>
+  <button id="btnMenuToggle" aria-label="Abrir menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+  </button>
+</div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="M9 3h6"/><path d="M8 6h8l1 3H7l1-3Z"/><path d="M9 9v11a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2V9"/><path d="M6 13h3"/></svg>
+      </div>
+      <div class="brand-text">
+        <div class="name">Globo</div>
+        <div class="sub">Orçamentos</div>
+      </div>
+    </div>
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="novo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        Novo orçamento
+      </button>
+      <button class="tab-btn" data-tab="precos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 3-6 6v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-9l-6-6Z"/><circle cx="9" cy="10" r="1.4"/><path d="m14 3 7 7-9 9"/></svg>
+        Tabela de preços
+      </button>
+      <button class="tab-btn" data-tab="empresa">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1"/><path d="M9 8h1M14 8h1M9 12h1M14 12h1M9 16h1M14 16h1"/></svg>
+        Empresa
+      </button>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="co" id="sidebarCompanyInfo"><b>Extintores Globo</b><br>Venda e manutenção</div>
+    </div>
+  </aside>
+
+  <main>
+    <!-- ================= NOVO ORÇAMENTO ================= -->
+    <section id="tab-novo" class="tab-page">
+      <div class="page-head">
+        <div>
+          <h1>Novo orçamento</h1>
+          <div class="desc">Venda e manutenção de extintores — Pó ABC e CO2, 4/6/8/12kg</div>
+        </div>
+        <div class="head-actions">
+          <button class="btn btn-ghost" id="btnLimpar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m2 0-1 14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1L5 6"/></svg>
+            Limpar
+          </button>
+          <button class="btn" id="btnImprimir">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6M6 18h12v3H6v-3ZM4 9h16a1 1 0 0 1 1 1v6h-4v-2H7v2H3v-6a1 1 0 0 1 1-1Z"/></svg>
+            Gerar PDF
+          </button>
+          <button class="btn btn-accent" id="btnWhats">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.5 7.5L3 20l1.1-5.3A8.5 8.5 0 1 1 21 11.5Z"/><path d="M8.5 9.5c0 3.5 3 6 6 6"/></svg>
+            Enviar por WhatsApp
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-2" style="align-items:start;">
+        <div class="card section-gap">
+          <h2>Cliente</h2>
+          <div class="card-sub">Dados de quem vai receber a proposta</div>
+          <div class="grid grid-2" style="gap:12px;">
+            <div class="field"><label>Nome / Empresa</label><input type="text" id="cNome" placeholder="Ex: Condomínio Vista Verde"></div>
+            <div class="field"><label>WhatsApp</label><input type="tel" id="cFone" placeholder="(11) 91234-5678"></div>
+            <div class="field" style="grid-column:1/-1;"><label>Endereço</label><input type="text" id="cEndereco" placeholder="Rua, número, bairro, cidade"></div>
+          </div>
+        </div>
+
+        <div class="card section-gap">
+          <h2>Condições</h2>
+          <div class="card-sub">Prazos, pagamento e validade da proposta</div>
+          <div class="grid grid-2" style="gap:12px;">
+            <div class="field"><label>Data</label><input type="date" id="oData"></div>
+            <div class="field"><label>Validade (dias)</label><input type="number" id="oValidade" value="7" min="1"></div>
+            <div class="field"><label>Forma de pagamento</label>
+              <select id="oPagamento"><option>Pix</option><option>Dinheiro</option><option>Cartão de crédito</option><option>Cartão de débito</option><option>Boleto</option><option>A combinar</option></select>
+            </div>
+            <div class="field"><label>Condição</label>
+              <select id="oCondicao"><option>À vista</option><option>2x</option><option>3x</option><option>4x</option><option>Mensal (contrato)</option></select>
+            </div>
+            <div class="field" style="grid-column:1/-1;"><label>Prazo de atendimento</label><input type="text" id="oPrazo" placeholder="Ex: retirada em até 2 dias úteis"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card section-gap">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+          <div>
+            <h2>Itens do orçamento</h2>
+            <div class="card-sub">Escolha venda de extintor, serviço de manutenção, ou digite um item avulso</div>
+          </div>
+          <button class="btn btn-sm btn-accent" id="btnAddItem">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            Adicionar item
+          </button>
+        </div>
+        <div class="item-header-row">
+          <span class="card-sub" style="margin:0;">Categoria</span>
+          <span class="card-sub" style="margin:0;">Tipo</span>
+          <span class="card-sub" style="margin:0;">Peso</span>
+          <span class="card-sub" style="margin:0;">Serviço / descrição</span>
+          <span class="card-sub" style="margin:0;">Qtd</span>
+          <span class="card-sub" style="margin:0;">Valor un.</span>
+          <span class="card-sub" style="margin:0;">Subtotal</span>
+          <span></span>
+        </div>
+        <div id="itemsList"></div>
+        <div id="itemsEmpty" class="empty">Nenhum item adicionado ainda. Clique em "Adicionar item".</div>
+      </div>
+
+      <div class="grid grid-2" style="align-items:start;">
+        <div class="card section-gap">
+          <h2>Observações</h2>
+          <div class="card-sub">Aparece no rodapé da proposta impressa</div>
+          <textarea id="oObs" placeholder="Ex: Extintores com selo INMETRO. Garantia de 1 ano na recarga."></textarea>
+        </div>
+        <div class="card section-gap">
+          <h2>Resumo</h2>
+          <div class="totals-box">
+            <div class="totals-row"><span>Subtotal</span><span class="mono" id="tSubtotal">R$ 0,00</span></div>
+            <div class="totals-row">
+              <span>Desconto</span>
+              <span style="display:flex;gap:6px;align-items:center;">
+                <input type="number" id="oDesconto" value="0" min="0" style="width:70px;padding:4px 6px;" class="mono">
+                <select id="oDescontoTipo" style="width:60px;padding:4px 4px;"><option value="pct">%</option><option value="rs">R$</option></select>
+              </span>
+            </div>
+            <div class="totals-row"><span>Frete / instalação</span><input type="number" id="oFrete" value="0" min="0" style="width:100px;padding:4px 6px;" class="mono"></div>
+            <div class="totals-row grand"><span>Total</span><span class="mono" id="tTotal">R$ 0,00</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TABELA DE PREÇOS ================= -->
+    <section id="tab-precos" class="tab-page" style="display:none;">
+      <div class="page-head">
+        <div><h1>Tabela de preços</h1><div class="desc">Preço por produto e serviço, usado ao montar o orçamento</div></div>
+      </div>
+
+      <div class="card section-gap">
+        <h2>Venda de extintores</h2>
+        <div class="card-sub">Ajuste o preço de venda de cada extintor</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Tipo</th><th>Peso</th><th class="num">Preço (un.)</th></tr></thead>
+            <tbody id="precoVendaBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Manutenção</h2>
+        <div class="card-sub">Recarga, inspeção, teste hidrostático e retest — por tipo e peso do extintor</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Serviço</th><th>Tipo</th><th>Peso</th><th class="num">Preço (un.)</th></tr></thead>
+            <tbody id="precoManutBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= EMPRESA ================= -->
+    <section id="tab-empresa" class="tab-page" style="display:none;">
+      <div class="page-head">
+        <div><h1>Empresa</h1><div class="desc">Dados que aparecem na proposta impressa e no envio por WhatsApp</div></div>
+        <div class="head-actions"><button class="btn btn-accent" id="btnSalvarEmpresa">Salvar dados</button></div>
+      </div>
+
+      <div class="grid grid-2" style="align-items:start;">
+        <div class="card">
+          <h2>Identidade</h2>
+          <div class="grid" style="gap:12px;">
+            <div class="field"><label>Logo</label>
+              <div class="logo-drop" id="logoDrop">
+                <span id="logoPlaceholder">Clique para enviar a logo (PNG/JPG)</span>
+                <img id="logoPreview" style="display:none;">
+                <input type="file" accept="image/*" class="hidden-file" id="logoInput">
+              </div>
+            </div>
+            <div class="field"><label>Nome da empresa</label><input type="text" id="eNome" value="Extintores Globo"></div>
+            <div class="field"><label>Telefone / WhatsApp</label><input type="tel" id="eFone" placeholder="(11) 90000-0000"></div>
+            <div class="field"><label>Endereço</label><input type="text" id="eEndereco" placeholder="Rua, número, bairro, cidade – UF"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Padrões da proposta</h2>
+          <div class="grid" style="gap:12px;">
+            <div class="field"><label>Validade padrão (dias)</label><input type="number" id="eValidadePadrao" value="7" min="1"></div>
+            <div class="field"><label>Texto padrão de rodapé (garantia, condições gerais)</label>
+              <textarea id="eRodape" style="min-height:130px;" placeholder="Ex: Extintores novos com selo INMETRO e certificado de garantia. Recargas e manutenções seguem a NBR 12962. Preços sujeitos a alteração após o prazo de validade.">Extintores novos acompanham selo INMETRO e certificado de garantia. Serviços de manutenção e recarga seguem a norma NBR 12962. Preços sujeitos a alteração após o prazo de validade desta proposta.</textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ============ ÁREA DE IMPRESSÃO ============ -->
+<div id="printArea">
+  <div class="doc">
+    <div class="doc-head">
+      <div class="logo-box">
+        <img id="pLogo" style="display:none;">
+        <div class="co-name" id="pCoNome">Extintores Globo</div>
+        <div class="co-meta" id="pCoMeta"></div>
+      </div>
+      <div class="doc-title">
+        <div class="t">Orçamento</div>
+        <div class="n" id="pDocData"></div>
+        <div class="n" id="pDocValidade"></div>
+      </div>
+    </div>
+    <div class="doc-client">
+      <div><b>Cliente</b><span id="pCliNome"></span></div>
+      <div><b>Contato</b><span id="pCliFone"></span></div>
+      <div><b>Endereço</b><span id="pCliEndereco"></span></div>
+    </div>
+    <table>
+      <thead><tr><th>Item</th><th>Peso</th><th class="num">Qtd</th><th class="num">Vlr. un.</th><th class="num">Subtotal</th></tr></thead>
+      <tbody id="pItens"></tbody>
+    </table>
+    <div class="doc-totals">
+      <div class="r"><span>Subtotal</span><span id="pSubtotal"></span></div>
+      <div class="r" id="pRowDesconto"><span>Desconto</span><span id="pDesconto"></span></div>
+      <div class="r" id="pRowFrete"><span>Frete / instalação</span><span id="pFrete"></span></div>
+      <div class="r grand"><span>Total</span><span id="pTotal"></span></div>
+    </div>
+    <div class="doc-client" style="margin-top:18px;">
+      <div><b>Pagamento</b><span id="pPagamento"></span></div>
+      <div><b>Prazo de atendimento</b><span id="pPrazo"></span></div>
+    </div>
+    <div class="doc-foot" id="pRodape"></div>
+    <div class="doc-sign">
+      <div>Extintores Globo</div>
+      <div id="pCliNomeAssinatura">Cliente</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const LS_PRICELIST = "globo-pricelist-v1";
+  const LS_COMPANY = "globo-company-v1";
+
+  const WEIGHTS = [4,6,8,12];
+  const TYPES = ["Pó ABC","CO2"];
+
+  function uid(){ return Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4); }
+  function brl(n){ n = Number(n)||0; return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
+  function toNum(v){ const n = parseFloat(v); return isNaN(n) ? 0 : n; }
+  function round2(n){ return Math.round(n*100)/100; }
+
+  function safeLoad(key, fallback){
+    try{
+      const raw = localStorage.getItem(key);
+      if(!raw) return fallback;
+      return JSON.parse(raw);
+    }catch(e){ return fallback; }
+  }
+  function safeSave(key, val){
+    try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){ /* storage unavailable, ignore */ }
+  }
+
+  function toast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(()=>t.classList.remove('show'), 2200);
+  }
+
+  /* ---------------- default price list (seed values only) ---------------- */
+  function seedVendaPreco(tipo,peso){
+    const custo = { "Pó ABC": {4:85,6:115,8:145,12:210}, "CO2": {4:260,6:340,8:430,12:600} }[tipo][peso];
+    const margem = { "Pó ABC": {4:45,6:45,8:42,12:40}, "CO2": {4:35,6:35,8:32,12:30} }[tipo][peso];
+    return round2(custo / (1 - margem/100));
+  }
+  const MANUT_SERVICOS = [
+    "Recarga",
+    "Manutenção Nível 1 (Inspeção)",
+    "Manutenção Nível 2 (c/ Teste Hidrostático)",
+    "Manutenção Nível 3 (Retest / Troca de Casco)"
+  ];
+  function seedManutPreco(servico,tipo,peso){
+    const idx = WEIGHTS.indexOf(peso);
+    const custo = {
+      "Recarga": { "Pó ABC":[25,32,40,55], "CO2":[45,60,75,95] },
+      "Manutenção Nível 1 (Inspeção)": { "Pó ABC":[15,18,20,25], "CO2":[15,18,20,25] },
+      "Manutenção Nível 2 (c/ Teste Hidrostático)": { "Pó ABC":[45,55,65,85], "CO2":[60,75,90,120] },
+      "Manutenção Nível 3 (Retest / Troca de Casco)": { "Pó ABC":[90,110,130,170], "CO2":[140,170,210,270] }
+    }[servico][tipo][idx];
+    const margem = { "Recarga":55, "Manutenção Nível 1 (Inspeção)":65, "Manutenção Nível 2 (c/ Teste Hidrostático)":45, "Manutenção Nível 3 (Retest / Troca de Casco)":40 }[servico];
+    return round2(custo / (1 - margem/100));
+  }
+
+  function buildDefaultPricelist(){
+    const items = [];
+    TYPES.forEach(tipo=>{
+      WEIGHTS.forEach(peso=>{
+        items.push({ id: uid(), categoria:'venda', servico:'Extintor', tipo, peso, preco: seedVendaPreco(tipo,peso) });
+      });
+    });
+    MANUT_SERVICOS.forEach(servico=>{
+      TYPES.forEach(tipo=>{
+        WEIGHTS.forEach(peso=>{
+          items.push({ id: uid(), categoria:'manutencao', servico, tipo, peso, preco: seedManutPreco(servico,tipo,peso) });
+        });
+      });
+    });
+    return items;
+  }
+
+  /* ---------------- state ---------------- */
+  let pricelist = safeLoad(LS_PRICELIST, null) || buildDefaultPricelist();
+  let company = safeLoad(LS_COMPANY, {
+    nome:"Extintores Globo", fone:"", endereco:"",
+    validadePadrao:7, logo:"",
+    rodape:"Extintores novos acompanham selo INMETRO e certificado de garantia. Serviços de manutenção e recarga seguem a norma NBR 12962. Preços sujeitos a alteração após o prazo de validade desta proposta."
+  });
+  let currentItems = [];
+
+  function persistAll(){
+    safeSave(LS_PRICELIST, pricelist);
+    safeSave(LS_COMPANY, company);
+  }
+
+  /* ---------------- tabs ---------------- */
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.tab-page').forEach(p=>p.style.display='none');
+      document.getElementById('tab-'+btn.dataset.tab).style.display='block';
+      if(btn.dataset.tab==='precos') renderPricelist();
+      if(btn.dataset.tab==='empresa') fillEmpresaForm();
+      closeSidebar();
+    });
+  });
+
+  /* ---------------- mobile sidebar ---------------- */
+  const sidebarEl = document.getElementById('sidebar');
+  const overlayEl = document.getElementById('sidebarOverlay');
+  function openSidebar(){ sidebarEl.classList.add('open'); overlayEl.classList.add('show'); }
+  function closeSidebar(){ sidebarEl.classList.remove('open'); overlayEl.classList.remove('show'); }
+  document.getElementById('btnMenuToggle').addEventListener('click', ()=>{
+    sidebarEl.classList.contains('open') ? closeSidebar() : openSidebar();
+  });
+  overlayEl.addEventListener('click', closeSidebar);
+
+  /* ---------------- item picker options ---------------- */
+  function pricelistOptionsHtml(selectedId){
+    const groups = {};
+    pricelist.forEach(p=>{
+      const label = p.categoria==='venda' ? 'Venda de extintores' : 'Manutenção';
+      groups[label] = groups[label] || [];
+      const desc = p.categoria==='venda'
+        ? `Extintor ${p.tipo} ${p.peso}kg`
+        : `${p.servico} — ${p.tipo} ${p.peso}kg`;
+      groups[label].push({id:p.id, desc});
+    });
+    let html = '<option value="__custom__">Item avulso / outro…</option>';
+    Object.keys(groups).forEach(g=>{
+      html += `<optgroup label="${g}">`;
+      groups[g].forEach(o=>{
+        html += `<option value="${o.id}" ${o.id===selectedId?'selected':''}>${o.desc}</option>`;
+      });
+      html += `</optgroup>`;
+    });
+    return html;
+  }
+
+  function addItemRow(preset){
+    const row = Object.assign({
+      id: uid(), pricelistId:'', descricao:'', tipo:'', peso:'', categoria:'', qtd:1, valorUnit:0
+    }, preset||{});
+    currentItems.push(row);
+    renderItems();
+  }
+
+  function renderItems(){
+    const wrap = document.getElementById('itemsList');
+    const empty = document.getElementById('itemsEmpty');
+    wrap.innerHTML = '';
+    empty.style.display = currentItems.length ? 'none' : 'block';
+    currentItems.forEach(item=>{
+      const isCustom = !item.pricelistId;
+      const div = document.createElement('div');
+      div.className = 'item-row-grid section-gap';
+      div.style.marginBottom = '10px';
+      div.innerHTML = `
+        <div class="field"><select data-role="picker" style="width:100%;">${pricelistOptionsHtml(item.pricelistId)}</select></div>
+        <div class="field"><input type="text" data-role="tipo" value="${item.tipo||''}" placeholder="Tipo" ${isCustom?'':'readonly'}></div>
+        <div class="field"><input type="text" data-role="peso" value="${item.peso? item.peso+'kg':''}" placeholder="Peso" ${isCustom?'':'readonly'}></div>
+        <div class="field"><input type="text" data-role="descricao" value="${item.descricao||''}" placeholder="Descrição" ${isCustom?'':'readonly'}></div>
+        <div class="field"><input type="number" class="mono" data-role="qtd" value="${item.qtd}" min="1"></div>
+        <div class="field"><input type="number" class="mono" data-role="valorUnit" value="${item.valorUnit}" min="0" step="0.01"></div>
+        <div class="field"><input type="text" class="mono" data-role="subtotal" value="${brl(item.qtd*item.valorUnit)}" readonly></div>
+        <button class="icon-btn" data-role="remove" title="Remover"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m2 0-1 14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1L5 6"/></svg></button>
+      `;
+      div.querySelector('[data-role="picker"]').addEventListener('change', e=>{
+        const val = e.target.value;
+        if(val==='__custom__'){
+          Object.assign(item,{pricelistId:'', tipo:'', peso:'', descricao:'', valorUnit:0});
+        }else{
+          const p = pricelist.find(x=>x.id===val);
+          if(p){
+            item.pricelistId = p.id;
+            item.tipo = p.tipo;
+            item.peso = p.peso;
+            item.categoria = p.categoria;
+            item.descricao = p.categoria==='venda' ? 'Extintor '+p.tipo : p.servico;
+            item.valorUnit = p.preco;
+          }
+        }
+        renderItems(); recalcTotals();
+      });
+      div.querySelector('[data-role="qtd"]').addEventListener('input', e=>{ item.qtd = toNum(e.target.value)||1; renderItems(); recalcTotals(); });
+      div.querySelector('[data-role="valorUnit"]').addEventListener('input', e=>{ item.valorUnit = toNum(e.target.value); renderItems(); recalcTotals(); });
+      if(isCustom){
+        div.querySelector('[data-role="tipo"]').addEventListener('input', e=>{ item.tipo = e.target.value; });
+        div.querySelector('[data-role="peso"]').addEventListener('input', e=>{ item.peso = e.target.value.replace('kg',''); });
+        div.querySelector('[data-role="descricao"]').addEventListener('input', e=>{ item.descricao = e.target.value; });
+      }
+      div.querySelector('[data-role="remove"]').addEventListener('click', ()=>{
+        currentItems = currentItems.filter(x=>x.id!==item.id);
+        renderItems(); recalcTotals();
+      });
+      wrap.appendChild(div);
+    });
+  }
+
+  function recalcTotals(){
+    const subtotal = currentItems.reduce((s,i)=>s + toNum(i.qtd)*toNum(i.valorUnit), 0);
+    const descontoVal = toNum(document.getElementById('oDesconto').value);
+    const descontoTipo = document.getElementById('oDescontoTipo').value;
+    const frete = toNum(document.getElementById('oFrete').value);
+    const desconto = descontoTipo==='pct' ? subtotal*(descontoVal/100) : descontoVal;
+    const total = Math.max(0, subtotal - desconto + frete);
+    document.getElementById('tSubtotal').textContent = brl(subtotal);
+    document.getElementById('tTotal').textContent = brl(total);
+    return {subtotal, desconto, frete, total};
+  }
+
+  ['oDesconto','oDescontoTipo','oFrete'].forEach(id=>{
+    document.getElementById(id).addEventListener('input', recalcTotals);
+    document.getElementById(id).addEventListener('change', recalcTotals);
+  });
+
+  document.getElementById('btnAddItem').addEventListener('click', ()=>addItemRow());
+
+  function todayISO(){ return new Date().toISOString().slice(0,10); }
+
+  function resetForm(){
+    document.getElementById('cNome').value='';
+    document.getElementById('cFone').value='';
+    document.getElementById('cEndereco').value='';
+    document.getElementById('oData').value = todayISO();
+    document.getElementById('oValidade').value = company.validadePadrao || 7;
+    document.getElementById('oPagamento').value='Pix';
+    document.getElementById('oCondicao').value='À vista';
+    document.getElementById('oPrazo').value='';
+    document.getElementById('oObs').value='';
+    document.getElementById('oDesconto').value=0;
+    document.getElementById('oDescontoTipo').value='pct';
+    document.getElementById('oFrete').value=0;
+    currentItems = [];
+    renderItems();
+    recalcTotals();
+  }
+
+  document.getElementById('btnLimpar').addEventListener('click', ()=>{
+    resetForm();
+    toast('Formulário limpo');
+  });
+
+  function collectFormQuote(){
+    const t = recalcTotals();
+    return {
+      cliente: {
+        nome: document.getElementById('cNome').value.trim(),
+        fone: document.getElementById('cFone').value.trim(),
+        endereco: document.getElementById('cEndereco').value.trim()
+      },
+      condicoes: {
+        data: document.getElementById('oData').value || todayISO(),
+        validade: toNum(document.getElementById('oValidade').value)||7,
+        pagamento: document.getElementById('oPagamento').value,
+        condicao: document.getElementById('oCondicao').value,
+        prazo: document.getElementById('oPrazo').value.trim()
+      },
+      obs: document.getElementById('oObs').value.trim(),
+      items: JSON.parse(JSON.stringify(currentItems)),
+      totais: t
+    };
+  }
+
+  /* ---------------- print ---------------- */
+  function buildPrintDoc(q){
+    document.getElementById('pCoNome').textContent = company.nome || 'Extintores Globo';
+    const metaParts = [company.endereco, company.fone].filter(Boolean);
+    document.getElementById('pCoMeta').textContent = metaParts.join(' · ');
+    const logoImg = document.getElementById('pLogo');
+    if(company.logo){ logoImg.src = company.logo; logoImg.style.display='block'; } else { logoImg.style.display='none'; }
+
+    document.getElementById('pDocData').textContent = 'Data: ' + (q.condicoes.data? new Date(q.condicoes.data+'T00:00:00').toLocaleDateString('pt-BR') : '');
+    document.getElementById('pDocValidade').textContent = 'Válido por ' + q.condicoes.validade + ' dias';
+
+    document.getElementById('pCliNome').textContent = q.cliente.nome || '—';
+    document.getElementById('pCliFone').textContent = q.cliente.fone || '—';
+    document.getElementById('pCliEndereco').textContent = q.cliente.endereco || '—';
+    document.getElementById('pCliNomeAssinatura').textContent = q.cliente.nome || 'Cliente';
+
+    const tbody = document.getElementById('pItens');
+    tbody.innerHTML = '';
+    q.items.forEach(i=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${i.descricao||''}</td><td>${i.peso? i.peso+'kg':'—'}</td><td class="num">${i.qtd}</td><td class="num">${brl(i.valorUnit)}</td><td class="num">${brl(i.qtd*i.valorUnit)}</td>`;
+      tbody.appendChild(tr);
+    });
+
+    const t = q.totais;
+    document.getElementById('pSubtotal').textContent = brl(t.subtotal);
+    document.getElementById('pRowDesconto').style.display = t.desconto>0 ? 'flex':'none';
+    document.getElementById('pDesconto').textContent = '- ' + brl(t.desconto);
+    document.getElementById('pRowFrete').style.display = t.frete>0 ? 'flex':'none';
+    document.getElementById('pFrete').textContent = brl(t.frete);
+    document.getElementById('pTotal').textContent = brl(t.total);
+
+    document.getElementById('pPagamento').textContent = q.condicoes.pagamento + ' · ' + q.condicoes.condicao;
+    document.getElementById('pPrazo').textContent = q.condicoes.prazo || '—';
+    document.getElementById('pRodape').textContent = (company.rodape||'') + (q.obs? ('\n\nObservações: '+q.obs) : '');
+  }
+
+  document.getElementById('btnImprimir').addEventListener('click', ()=>{
+    if(currentItems.length===0){ toast('Adicione itens antes de gerar o PDF'); return; }
+    const q = collectFormQuote();
+    buildPrintDoc(q);
+    setTimeout(()=>window.print(), 60);
+  });
+
+  /* ---------------- whatsapp ---------------- */
+  function digits(s){ return (s||'').replace(/\D/g,''); }
+  document.getElementById('btnWhats').addEventListener('click', ()=>{
+    if(currentItems.length===0){ toast('Adicione itens antes de enviar'); return; }
+    const q = collectFormQuote();
+    let msg = `*Orçamento – ${company.nome||'Extintores Globo'}*\n`;
+    msg += `Cliente: ${q.cliente.nome||'-'}\n\n`;
+    q.items.forEach(i=>{
+      msg += `• ${i.descricao}${i.peso? ' ('+i.peso+'kg)':''} — ${i.qtd}x ${brl(i.valorUnit)} = ${brl(i.qtd*i.valorUnit)}\n`;
+    });
+    msg += `\nSubtotal: ${brl(q.totais.subtotal)}\n`;
+    if(q.totais.desconto>0) msg += `Desconto: -${brl(q.totais.desconto)}\n`;
+    if(q.totais.frete>0) msg += `Frete/instalação: ${brl(q.totais.frete)}\n`;
+    msg += `*Total: ${brl(q.totais.total)}*\n\n`;
+    msg += `Pagamento: ${q.condicoes.pagamento} (${q.condicoes.condicao})\n`;
+    msg += `Válido por ${q.condicoes.validade} dias.\n`;
+    if(q.obs) msg += `\n${q.obs}`;
+    const phone = digits(q.cliente.fone);
+    const full = phone ? (phone.length<=11 ? '55'+phone : phone) : '';
+    const url = 'https://wa.me/' + full + '?text=' + encodeURIComponent(msg);
+    window.open(url, '_blank');
+  });
+
+  /* ---------------- pricelist tab ---------------- */
+  function renderPricelist(){
+    const vendaBody = document.getElementById('precoVendaBody');
+    const manutBody = document.getElementById('precoManutBody');
+    vendaBody.innerHTML=''; manutBody.innerHTML='';
+
+    pricelist.filter(p=>p.categoria==='venda').sort((a,b)=> a.tipo.localeCompare(b.tipo) || a.peso-b.peso).forEach(p=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = rowHtml(p, false);
+      bindPriceRow(tr, p);
+      vendaBody.appendChild(tr);
+    });
+    pricelist.filter(p=>p.categoria==='manutencao').sort((a,b)=> MANUT_SERVICOS.indexOf(a.servico)-MANUT_SERVICOS.indexOf(b.servico) || a.tipo.localeCompare(b.tipo) || a.peso-b.peso).forEach(p=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = rowHtml(p, true);
+      bindPriceRow(tr, p);
+      manutBody.appendChild(tr);
+    });
+  }
+  function rowHtml(p, withServico){
+    return `
+      ${withServico? `<td>${p.servico}</td>`:''}
+      <td>${p.tipo}</td>
+      <td>${p.peso}kg</td>
+      <td class="num"><input type="number" class="mono" data-role="preco" value="${p.preco}" min="0" step="0.01" style="width:110px;text-align:right;"></td>
+    `;
+  }
+  function bindPriceRow(tr,p){
+    tr.querySelector('[data-role="preco"]').addEventListener('input', e=>{ p.preco=toNum(e.target.value); persistAll(); });
+  }
+
+  /* ---------------- empresa tab ---------------- */
+  function fillEmpresaForm(){
+    document.getElementById('eNome').value = company.nome||'';
+    document.getElementById('eFone').value = company.fone||'';
+    document.getElementById('eEndereco').value = company.endereco||'';
+    document.getElementById('eValidadePadrao').value = company.validadePadrao||7;
+    document.getElementById('eRodape').value = company.rodape||'';
+    if(company.logo){
+      document.getElementById('logoPreview').src = company.logo;
+      document.getElementById('logoPreview').style.display='block';
+      document.getElementById('logoPlaceholder').style.display='none';
+    }
+    updateSidebarCompany();
+  }
+  function updateSidebarCompany(){
+    document.getElementById('sidebarCompanyInfo').innerHTML = `<b>${company.nome||'Extintores Globo'}</b><br>Venda e manutenção`;
+  }
+  document.getElementById('logoInput').addEventListener('change', e=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      company.logo = reader.result;
+      document.getElementById('logoPreview').src = company.logo;
+      document.getElementById('logoPreview').style.display='block';
+      document.getElementById('logoPlaceholder').style.display='none';
+      persistAll();
+    };
+    reader.readAsDataURL(file);
+  });
+  document.getElementById('btnSalvarEmpresa').addEventListener('click', ()=>{
+    company.nome = document.getElementById('eNome').value.trim() || 'Extintores Globo';
+    company.fone = document.getElementById('eFone').value.trim();
+    company.endereco = document.getElementById('eEndereco').value.trim();
+    company.validadePadrao = toNum(document.getElementById('eValidadePadrao').value)||7;
+    company.rodape = document.getElementById('eRodape').value;
+    persistAll();
+    updateSidebarCompany();
+    toast('Dados da empresa salvos');
+  });
+
+  /* ---------------- init ---------------- */
+  resetForm();
+  updateSidebarCompany();
+})();
+</script>
+
+</body>
+</html>
