@@ -408,50 +408,87 @@
     <!-- ================= TABELA DE PREÇOS ================= -->
     <section id="tab-precos" class="tab-page" style="display:none;">
       <div class="page-head">
-        <div><h1>Tabela de preços</h1><div class="desc">Preço por produto e serviço, usado ao montar o orçamento</div></div>
+        <div><h1>Tabela de preços</h1><div class="desc">Preço por produto e serviço, usado ao montar o orçamento — adicione, edite ou remova itens à vontade</div></div>
       </div>
 
       <div class="card section-gap">
-        <h2>Venda de extintores</h2>
-        <div class="card-sub">Ajuste o preço de venda de cada extintor</div>
-        <div class="table-wrap">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;flex-wrap:wrap;gap:10px;">
+          <div><h2>Venda de extintores</h2><div class="card-sub" style="margin-bottom:0;">Ajuste o preço de venda de cada extintor</div></div>
+          <button class="btn btn-sm" data-add-categoria="venda">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            Adicionar produto
+          </button>
+        </div>
+        <div class="table-wrap" style="margin-top:12px;">
           <table>
-            <thead><tr><th>Tipo</th><th>Peso</th><th class="num">Preço (un.)</th></tr></thead>
+            <thead><tr><th>Tipo</th><th>Peso</th><th class="num">Preço (un.)</th><th style="width:30px;"></th></tr></thead>
             <tbody id="precoVendaBody"></tbody>
           </table>
         </div>
       </div>
 
       <div class="card section-gap">
-        <h2>Manutenção</h2>
-        <div class="card-sub">Recarga, inspeção, teste hidrostático e retest — por tipo e peso do extintor</div>
-        <div class="table-wrap">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;flex-wrap:wrap;gap:10px;">
+          <div><h2>Manutenção</h2><div class="card-sub" style="margin-bottom:0;">Recarga, inspeção, teste hidrostático e retest — por tipo e peso do extintor</div></div>
+          <button class="btn btn-sm" data-add-categoria="manutencao">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            Adicionar serviço
+          </button>
+        </div>
+        <div class="table-wrap" style="margin-top:12px;">
           <table>
-            <thead><tr><th>Serviço</th><th>Tipo</th><th>Peso</th><th class="num">Preço (un.)</th></tr></thead>
+            <thead><tr><th>Serviço</th><th>Tipo</th><th>Peso</th><th class="num">Preço (un.)</th><th style="width:30px;"></th></tr></thead>
             <tbody id="precoManutBody"></tbody>
           </table>
         </div>
       </div>
 
       <div class="card section-gap">
-        <h2>Placas indicativas</h2>
-        <div class="card-sub">Sinalização fotoluminescente — extintor, saída, rota de fuga, etc.</div>
-        <div class="table-wrap">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;flex-wrap:wrap;gap:10px;">
+          <div><h2>Placas indicativas</h2><div class="card-sub" style="margin-bottom:0;">Sinalização fotoluminescente — extintor, saída, rota de fuga, etc.</div></div>
+          <button class="btn btn-sm" data-add-categoria="placa">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            Adicionar placa
+          </button>
+        </div>
+        <div class="table-wrap" style="margin-top:12px;">
           <table>
-            <thead><tr><th>Placa</th><th class="num">Preço (un.)</th></tr></thead>
+            <thead><tr><th>Placa</th><th class="num">Preço (un.)</th><th style="width:30px;"></th></tr></thead>
             <tbody id="precoPlacaBody"></tbody>
           </table>
         </div>
       </div>
 
-      <div class="card">
-        <h2>Luminárias de emergência</h2>
-        <div class="card-sub">Blocos autônomos e balizamento</div>
-        <div class="table-wrap">
+      <div class="card section-gap">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;flex-wrap:wrap;gap:10px;">
+          <div><h2>Luminárias de emergência</h2><div class="card-sub" style="margin-bottom:0;">Blocos autônomos e balizamento</div></div>
+          <button class="btn btn-sm" data-add-categoria="luminaria">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            Adicionar luminária
+          </button>
+        </div>
+        <div class="table-wrap" style="margin-top:12px;">
           <table>
-            <thead><tr><th>Luminária</th><th class="num">Preço (un.)</th></tr></thead>
+            <thead><tr><th>Luminária</th><th class="num">Preço (un.)</th><th style="width:30px;"></th></tr></thead>
             <tbody id="precoLuminariaBody"></tbody>
           </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;flex-wrap:wrap;gap:10px;">
+          <div><h2>Outros produtos e serviços</h2><div class="card-sub" style="margin-bottom:0;">Qualquer item novo que não se encaixe nas categorias acima</div></div>
+          <button class="btn btn-sm" data-add-categoria="outro">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            Adicionar produto
+          </button>
+        </div>
+        <div class="table-wrap" style="margin-top:12px;">
+          <table>
+            <thead><tr><th>Descrição</th><th class="num">Preço (un.)</th><th style="width:30px;"></th></tr></thead>
+            <tbody id="precoOutroBody"></tbody>
+          </table>
+          <div id="precoOutroEmpty" class="empty" style="display:none;">Nenhum produto avulso cadastrado ainda.</div>
         </div>
       </div>
     </section>
@@ -687,14 +724,15 @@
     venda: 'Venda de extintores',
     manutencao: 'Manutenção',
     placa: 'Placas indicativas',
-    luminaria: 'Luminárias de emergência'
+    luminaria: 'Luminárias de emergência',
+    outro: 'Outros produtos'
   };
-  const CATEGORIA_ORDER = ['venda','manutencao','placa','luminaria'];
+  const CATEGORIA_ORDER = ['venda','manutencao','placa','luminaria','outro'];
 
   function pricelistItemDesc(p){
-    if(p.categoria==='venda') return `Extintor ${p.tipo} ${p.peso}kg`;
-    if(p.categoria==='manutencao') return `${p.servico} — ${p.tipo} ${p.peso}kg`;
-    return p.tipo;
+    if(p.categoria==='venda') return `Extintor ${p.tipo||'—'} ${p.peso?p.peso+'kg':''}`.trim();
+    if(p.categoria==='manutencao') return `${p.servico||'—'} — ${p.tipo||''} ${p.peso?p.peso+'kg':''}`.trim();
+    return p.tipo || '(sem nome)';
   }
 
   function pricelistOptionsHtml(selectedId){
@@ -719,7 +757,7 @@
   function fullDescricao(item){
     if(item.categoria==='venda') return `Extintor ${item.tipo} ${item.peso}kg`;
     if(item.categoria==='manutencao') return `${item.descricao} — Extintor ${item.tipo} ${item.peso}kg`;
-    if(item.categoria==='placa' || item.categoria==='luminaria') return item.descricao;
+    if(item.categoria==='placa' || item.categoria==='luminaria' || item.categoria==='outro') return item.descricao;
     return item.descricao + (item.tipo? ` ${item.tipo}`:'') + (item.peso? ` ${item.peso}kg`:'');
   }
 
@@ -939,50 +977,87 @@
     const manutBody = document.getElementById('precoManutBody');
     const placaBody = document.getElementById('precoPlacaBody');
     const luminariaBody = document.getElementById('precoLuminariaBody');
-    vendaBody.innerHTML=''; manutBody.innerHTML=''; placaBody.innerHTML=''; luminariaBody.innerHTML='';
+    const outroBody = document.getElementById('precoOutroBody');
+    vendaBody.innerHTML=''; manutBody.innerHTML=''; placaBody.innerHTML=''; luminariaBody.innerHTML=''; outroBody.innerHTML='';
 
-    pricelist.filter(p=>p.categoria==='venda').sort((a,b)=> a.tipo.localeCompare(b.tipo) || a.peso-b.peso).forEach(p=>{
+    pricelist.filter(p=>p.categoria==='venda').forEach(p=>{
       const tr = document.createElement('tr');
       tr.innerHTML = rowHtml(p, false);
-      bindPriceRow(tr, p);
+      bindPriceRow(tr, p, renderPricelist);
       vendaBody.appendChild(tr);
     });
-    pricelist.filter(p=>p.categoria==='manutencao').sort((a,b)=> MANUT_SERVICOS.indexOf(a.servico)-MANUT_SERVICOS.indexOf(b.servico) || a.tipo.localeCompare(b.tipo) || a.peso-b.peso).forEach(p=>{
+    pricelist.filter(p=>p.categoria==='manutencao').forEach(p=>{
       const tr = document.createElement('tr');
       tr.innerHTML = rowHtml(p, true);
-      bindPriceRow(tr, p);
+      bindPriceRow(tr, p, renderPricelist);
       manutBody.appendChild(tr);
     });
     pricelist.filter(p=>p.categoria==='placa').forEach(p=>{
       const tr = document.createElement('tr');
-      tr.innerHTML = rowHtmlSimple(p);
-      bindPriceRow(tr, p);
+      tr.innerHTML = rowHtmlSimple(p, 'Nome da placa');
+      bindPriceRow(tr, p, renderPricelist);
       placaBody.appendChild(tr);
     });
     pricelist.filter(p=>p.categoria==='luminaria').forEach(p=>{
       const tr = document.createElement('tr');
-      tr.innerHTML = rowHtmlSimple(p);
-      bindPriceRow(tr, p);
+      tr.innerHTML = rowHtmlSimple(p, 'Nome da luminária');
+      bindPriceRow(tr, p, renderPricelist);
       luminariaBody.appendChild(tr);
     });
+    const outros = pricelist.filter(p=>p.categoria==='outro');
+    document.getElementById('precoOutroEmpty').style.display = outros.length ? 'none' : 'block';
+    outros.forEach(p=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = rowHtmlSimple(p, 'Descrição do produto/serviço');
+      bindPriceRow(tr, p, renderPricelist);
+      outroBody.appendChild(tr);
+    });
+  }
+  function deleteBtnHtml(){
+    return `<td><button class="icon-btn" data-role="delPreco" title="Remover"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m2 0-1 14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1L5 6"/></svg></button></td>`;
   }
   function rowHtml(p, withServico){
     return `
-      ${withServico? `<td>${p.servico}</td>`:''}
-      <td>${p.tipo}</td>
-      <td>${p.peso}kg</td>
+      ${withServico? `<td><input type="text" data-role="servico" value="${p.servico||''}" style="width:100%;"></td>`:''}
+      <td><input type="text" data-role="tipo" value="${p.tipo||''}" style="width:100%;"></td>
+      <td><input type="text" class="mono" data-role="peso" value="${p.peso? p.peso+'kg':''}" placeholder="kg" style="width:80px;"></td>
       <td class="num"><input type="number" class="mono" data-role="preco" value="${p.preco}" min="0" step="0.01" style="width:110px;text-align:right;"></td>
+      ${deleteBtnHtml()}
     `;
   }
-  function rowHtmlSimple(p){
+  function rowHtmlSimple(p, placeholder){
     return `
-      <td>${p.tipo}</td>
+      <td><input type="text" data-role="tipo" value="${p.tipo||''}" placeholder="${placeholder||''}" style="width:100%;"></td>
       <td class="num"><input type="number" class="mono" data-role="preco" value="${p.preco}" min="0" step="0.01" style="width:110px;text-align:right;"></td>
+      ${deleteBtnHtml()}
     `;
   }
-  function bindPriceRow(tr,p){
-    tr.querySelector('[data-role="preco"]').addEventListener('input', e=>{ p.preco=toNum(e.target.value); persistAll(); });
+  function bindPriceRow(tr,p,onDelete){
+    const precoEl = tr.querySelector('[data-role="preco"]');
+    if(precoEl) precoEl.addEventListener('input', e=>{ p.preco=toNum(e.target.value); persistAll(); });
+    const servicoEl = tr.querySelector('[data-role="servico"]');
+    if(servicoEl) servicoEl.addEventListener('input', e=>{ p.servico=e.target.value; persistAll(); });
+    const tipoEl = tr.querySelector('[data-role="tipo"]');
+    if(tipoEl) tipoEl.addEventListener('input', e=>{ p.tipo=e.target.value; persistAll(); });
+    const pesoEl = tr.querySelector('[data-role="peso"]');
+    if(pesoEl) pesoEl.addEventListener('input', e=>{ p.peso=toNum(e.target.value.replace('kg','')); persistAll(); });
+    const delEl = tr.querySelector('[data-role="delPreco"]');
+    if(delEl) delEl.addEventListener('click', ()=>{
+      pricelist = pricelist.filter(x=>x.id!==p.id);
+      persistAll();
+      onDelete();
+    });
   }
+
+  function addPricelistItem(categoria){
+    const base = { id: uid(), categoria, servico:'', tipo:'', peso:'', preco:0 };
+    pricelist.push(base);
+    persistAll();
+    renderPricelist();
+  }
+  document.querySelectorAll('[data-add-categoria]').forEach(btn=>{
+    btn.addEventListener('click', ()=> addPricelistItem(btn.dataset.addCategoria));
+  });
 
   /* ---------------- empresa tab ---------------- */
   function fillEmpresaForm(){
