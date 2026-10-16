@@ -410,7 +410,8 @@
             </div>
           </div>
           <div class="grid grid-2" style="gap:12px;">
-            <div class="field"><label>Nome / Empresa</label><input type="text" id="cNome" placeholder="Ex: Condomínio Vista Verde"></div>
+            <div class="field" style="grid-column:1/-1;"><label>Nome / Empresa</label><input type="text" id="cNome" placeholder="Ex: Condomínio Vista Verde"></div>
+            <div class="field"><label>CPF / CNPJ</label><input type="text" id="cDoc" inputmode="numeric" maxlength="18" placeholder="000.000.000-00"></div>
             <div class="field"><label>WhatsApp</label><input type="tel" id="cFone" placeholder="(11) 91234-5678"></div>
             <div class="field" style="grid-column:1/-1;"><label>Endereço</label><input type="text" id="cEndereco" placeholder="Rua, número, bairro, cidade"></div>
             <div class="field"><label>Cidade</label><input type="text" id="cCidade" placeholder="Ex: Três Cachoeiras"></div>
@@ -786,6 +787,7 @@
       </div>
     </div>
     <div class="doc-client-row">
+      <div id="pCliDocBox"><b id="pCliDocLabel">CPF / CNPJ</b><span id="pCliDoc"></span></div>
       <div><b>Contato do cliente</b><span id="pCliFone"></span></div>
       <div><b>Endereço</b><span id="pCliEndereco"></span></div>
       <div><b>Pagamento</b><span id="pPagamento"></span></div>
@@ -1231,8 +1233,20 @@
 
   document.getElementById('btnAddItem').addEventListener('click', ()=>addItemRow());
 
+  /* ---------------- CPF / CNPJ ---------------- */
+  function formatDoc(v){
+    const d = (v||'').replace(/\D/g,'').slice(0,14);
+    if(d.length<=11) return d.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');
+    return d.replace(/^(\d{2})(\d)/,'$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3').replace(/\.(\d{3})(\d)/,'.$1/$2').replace(/(\d{4})(\d)/,'$1-$2');
+  }
+  function docLabel(v){ return (v||'').replace(/\D/g,'').length>11 ? 'CNPJ' : 'CPF'; }
+  ['cDoc','mCliDoc','eCnpj'].forEach(id=>{
+    document.getElementById(id).addEventListener('input', e=>{ e.target.value = formatDoc(e.target.value); });
+  });
+
   function resetForm(){
     document.getElementById('cNome').value='';
+    document.getElementById('cDoc').value='';
     document.getElementById('cFone').value='';
     document.getElementById('cEndereco').value='';
     document.getElementById('cCidade').value='';
@@ -1264,6 +1278,7 @@
     return {
       cliente: {
         nome: document.getElementById('cNome').value.trim(),
+        doc: document.getElementById('cDoc').value.trim(),
         fone: document.getElementById('cFone').value.trim(),
         endereco: document.getElementById('cEndereco').value.trim(),
         cidade: document.getElementById('cCidade').value.trim(),
@@ -1303,6 +1318,9 @@
     document.getElementById('pDocValidade').textContent = q.condicoes.validade + ' dias';
     document.getElementById('pCondicoes').textContent = q.condicoes.condicao || '—';
 
+    document.getElementById('pCliDocBox').style.display = q.cliente.doc ? '' : 'none';
+    document.getElementById('pCliDocLabel').textContent = docLabel(q.cliente.doc);
+    document.getElementById('pCliDoc').textContent = q.cliente.doc;
     document.getElementById('pCliFone').textContent = q.cliente.fone || '—';
     document.getElementById('pCliEndereco').textContent = q.cliente.endereco || '—';
     document.getElementById('pCliNomeAssinatura').textContent = q.cliente.nome || 'Cliente';
@@ -1403,7 +1421,9 @@
     if(currentItems.length===0){ toast('Adicione itens antes de enviar'); return; }
     const q = collectFormQuote();
     let msg = `*Orçamento – ${company.nome||'Extintores Globo'}*\n`;
-    msg += `Cliente: ${q.cliente.nome||'-'}\n\n`;
+    msg += `Cliente: ${q.cliente.nome||'-'}\n`;
+    if(q.cliente.doc) msg += `${docLabel(q.cliente.doc)}: ${q.cliente.doc}\n`;
+    msg += `\n`;
     q.items.forEach(i=>{
       msg += `• ${fullDescricao(i)} — ${i.qtd}x ${brl(i.valorUnit)} = ${brl(i.qtd*i.valorUnit)}\n`;
     });
@@ -1665,6 +1685,7 @@
   /* --------- usar cliente no orçamento --------- */
   function usarCliente(c){
     document.getElementById('cNome').value = c.nome||'';
+    document.getElementById('cDoc').value = c.doc||'';
     document.getElementById('cFone').value = c.fone||'';
     document.getElementById('cEndereco').value = c.endereco||'';
     document.getElementById('cCidade').value = c.cidade||'';
@@ -1692,6 +1713,7 @@
   function dadosClienteDoFormulario(){
     return {
       nome:     document.getElementById('cNome').value.trim(),
+      doc:      document.getElementById('cDoc').value.trim(),
       fone:     document.getElementById('cFone').value.trim(),
       endereco: document.getElementById('cEndereco').value.trim(),
       cidade:   document.getElementById('cCidade').value.trim(),
